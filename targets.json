@@ -1,21 +1,31 @@
 {
   "month": "2026-11",
-  "updatedAt": "2026-11-13 12:43",
+  "updatedAt": "2026-11-13 13:33",
   "targets": {
     "MERCARI": {
       "type": "amount",
-      "value": 1000000000.0,
-      "label": "10亿"
+      "value": 1279000000.0,
+      "label": "12.79亿"
     },
     "PAYPAY": {
-      "type": "percent",
-      "value": 101.0,
-      "label": "101%"
+      "type": "amount",
+      "value": 209000000.0,
+      "label": "2.09亿"
     },
     "SURUGA": {
       "type": "amount",
       "value": 50000000.0,
       "label": "5000万"
+    },
+    "YAHOO-AUCTIONS": {
+      "type": "amount",
+      "value": 71000000.0,
+      "label": "7100万"
+    },
+    "SNKRDUNK": {
+      "type": "amount",
+      "value": 42000000.0,
+      "label": "4200万"
     }
   }
 }
