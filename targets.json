@@ -1,31 +1,291 @@
 {
   "month": "2026-11",
-  "updatedAt": "2026-11-13 13:33",
+  "updatedAt": "2026-11-13 13:41",
   "targets": {
     "MERCARI": {
-      "type": "amount",
-      "value": 1279000000.0,
-      "label": "12.79亿"
+      "type": "percent",
+      "value": 101.0,
+      "label": "101%"
     },
     "PAYPAY": {
-      "type": "amount",
-      "value": 209000000.0,
-      "label": "2.09亿"
+      "type": "percent",
+      "value": 101.0,
+      "label": "101%"
     },
     "SURUGA": {
-      "type": "amount",
-      "value": 50000000.0,
-      "label": "5000万"
+      "type": "percent",
+      "value": 101.0,
+      "label": "101%"
     },
     "YAHOO-AUCTIONS": {
-      "type": "amount",
-      "value": 71000000.0,
-      "label": "7100万"
+      "type": "percent",
+      "value": 101.0,
+      "label": "101%"
     },
     "SNKRDUNK": {
+      "type": "percent",
+      "value": 101.0,
+      "label": "101%"
+    },
+    "RAKUTEN": {
       "type": "amount",
-      "value": 42000000.0,
-      "label": "4200万"
+      "value": 58000000.0,
+      "label": "5800万"
+    },
+    "193TCG": {
+      "type": "percent",
+      "value": 101.0,
+      "label": "101%"
+    },
+    "2NDSTREET": {
+      "type": "percent",
+      "value": 101.0,
+      "label": "101%"
+    },
+    "AMAZON": {
+      "type": "percent",
+      "value": 101.0,
+      "label": "101%"
+    },
+    "ANIMATE": {
+      "type": "percent",
+      "value": 101.0,
+      "label": "101%"
+    },
+    "BANDAI": {
+      "type": "percent",
+      "value": 101.0,
+      "label": "101%"
+    },
+    "BEAMS": {
+      "type": "percent",
+      "value": 101.0,
+      "label": "101%"
+    },
+    "BOOKOFF": {
+      "type": "percent",
+      "value": 101.0,
+      "label": "101%"
+    },
+    "BUNJANG": {
+      "type": "percent",
+      "value": 101.0,
+      "label": "101%"
+    },
+    "CAMERANONANIWA": {
+      "type": "percent",
+      "value": 101.0,
+      "label": "101%"
+    },
+    "CHIIKAWA": {
+      "type": "percent",
+      "value": 101.0,
+      "label": "101%"
+    },
+    "COCO-STORE": {
+      "type": "percent",
+      "value": 101.0,
+      "label": "101%"
+    },
+    "COLANTOTTE": {
+      "type": "percent",
+      "value": 101.0,
+      "label": "101%"
+    },
+    "COLLEIZE": {
+      "type": "percent",
+      "value": 101.0,
+      "label": "101%"
+    },
+    "DISNEY": {
+      "type": "percent",
+      "value": 101.0,
+      "label": "101%"
+    },
+    "FUKUYA": {
+      "type": "percent",
+      "value": 101.0,
+      "label": "101%"
+    },
+    "GAMERS": {
+      "type": "percent",
+      "value": 101.0,
+      "label": "101%"
+    },
+    "GRAIL": {
+      "type": "percent",
+      "value": 101.0,
+      "label": "101%"
+    },
+    "GRL": {
+      "type": "percent",
+      "value": 101.0,
+      "label": "101%"
+    },
+    "HARDOFF": {
+      "type": "percent",
+      "value": 101.0,
+      "label": "101%"
+    },
+    "JUMPCS": {
+      "type": "percent",
+      "value": 101.0,
+      "label": "101%"
+    },
+    "KADOKAWA": {
+      "type": "percent",
+      "value": 101.0,
+      "label": "101%"
+    },
+    "KITAMURA": {
+      "type": "percent",
+      "value": 101.0,
+      "label": "101%"
+    },
+    "MAGI": {
+      "type": "percent",
+      "value": 101.0,
+      "label": "101%"
+    },
+    "MAGICARDSHOP": {
+      "type": "percent",
+      "value": 101.0,
+      "label": "101%"
+    },
+    "MAGICARDSHOP_OP": {
+      "type": "percent",
+      "value": 101.0,
+      "label": "101%"
+    },
+    "MAGICARDSHOP_YGO": {
+      "type": "percent",
+      "value": 101.0,
+      "label": "101%"
+    },
+    "MANDARAKE": {
+      "type": "percent",
+      "value": 101.0,
+      "label": "101%"
+    },
+    "MERCARI-AUCTIONS": {
+      "type": "percent",
+      "value": 101.0,
+      "label": "101%"
+    },
+    "NEXT-USED": {
+      "type": "percent",
+      "value": 101.0,
+      "label": "101%"
+    },
+    "NIJISANJI": {
+      "type": "percent",
+      "value": 101.0,
+      "label": "101%"
+    },
+    "PATTYTHREE": {
+      "type": "percent",
+      "value": 101.0,
+      "label": "101%"
+    },
+    "POINT": {
+      "type": "percent",
+      "value": 101.0,
+      "label": "101%"
+    },
+    "RAGTAG": {
+      "type": "percent",
+      "value": 101.0,
+      "label": "101%"
+    },
+    "RAKUMA": {
+      "type": "percent",
+      "value": 101.0,
+      "label": "101%"
+    },
+    "REHELLO": {
+      "type": "percent",
+      "value": 101.0,
+      "label": "101%"
+    },
+    "RUY": {
+      "type": "percent",
+      "value": 101.0,
+      "label": "101%"
+    },
+    "SANRIO": {
+      "type": "percent",
+      "value": 101.0,
+      "label": "101%"
+    },
+    "SELFSTORE": {
+      "type": "percent",
+      "value": 101.0,
+      "label": "101%"
+    },
+    "SOFMAP": {
+      "type": "percent",
+      "value": 101.0,
+      "label": "101%"
+    },
+    "SQUARE-ENIX": {
+      "type": "percent",
+      "value": 101.0,
+      "label": "101%"
+    },
+    "SUNDRUG": {
+      "type": "percent",
+      "value": 101.0,
+      "label": "101%"
+    },
+    "TOEI": {
+      "type": "percent",
+      "value": 101.0,
+      "label": "101%"
+    },
+    "TOHOANIMA": {
+      "type": "percent",
+      "value": 101.0,
+      "label": "101%"
+    },
+    "TORANOANA": {
+      "type": "percent",
+      "value": 101.0,
+      "label": "101%"
+    },
+    "TOWER": {
+      "type": "percent",
+      "value": 101.0,
+      "label": "101%"
+    },
+    "WASTENOT": {
+      "type": "percent",
+      "value": 101.0,
+      "label": "101%"
+    },
+    "YUYU-TEI": {
+      "type": "percent",
+      "value": 101.0,
+      "label": "101%"
+    },
+    "ZOZOTOWN": {
+      "type": "percent",
+      "value": 101.0,
+      "label": "101%"
+    },
+    "amnibus": {
+      "type": "percent",
+      "value": 101.0,
+      "label": "101%"
+    },
+    "lashinbang": {
+      "type": "percent",
+      "value": 101.0,
+      "label": "101%"
+    },
+    "人工代购": {
+      "type": "percent",
+      "value": 101.0,
+      "label": "101%"
     }
   }
 }
