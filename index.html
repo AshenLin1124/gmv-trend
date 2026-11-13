@@ -104,9 +104,8 @@
   .tg-name{min-width:130px;text-align:right;font-size:12px;font-weight:600;color:var(--navy);white-space:nowrap}
   .tg-name .cn{color:var(--muted);font-weight:400;font-size:11px;margin-left:4px}
   .tg-track{flex:1;height:24px;background:#eef2f7;border-radius:5px;position:relative;overflow:visible}
-  .tg-fill{height:100%;border-radius:5px 0 0 5px;display:flex;align-items:center;justify-content:flex-end;padding-right:6px;color:#fff;font-size:11px;font-weight:600;transition:width .3s;min-width:2px}
+  .tg-fill{height:100%;border-radius:5px 0 0 5px;display:flex;align-items:center;justify-content:flex-end;color:#fff;font-size:11px;font-weight:600;transition:width .3s;min-width:2px}
   .tg-fill.over{border-radius:5px}
-  .tg-fill .pct-in{opacity:0}
   .tg-label{min-width:150px;text-align:left;font-size:12px;color:var(--muted);white-space:nowrap}
   .tg-label b{color:var(--navy);font-size:12.5px}
   .tg-label .pct-badge{font-weight:700;margin-left:6px}
@@ -239,7 +238,7 @@
   </div>
   <div id="tg-body"></div>
   <div class="tg-legend">
-    <span><i></i>红色虚线 = 目标值 100%（横轴按所选站点最大目标归一）</span>
+    <span><i></i>红色虚线 = 目标值 100%（每站目标=100%，柱子超出虚线表示超额达成）</span>
     <span><span class="sw hit"></span>已达标（≥100%）</span>
     <span><span class="sw miss"></span>未达标</span>
     <button class="tg-hint-btn" id="tg-how">如何设置目标？</button>
@@ -623,23 +622,19 @@ function renderTargets(){
   // 按进度降序排列
   rows.sort((a,b)=>b.pct-a.pct);
 
-  // 横轴归一：以所有展示站点中的最大目标金额为 100% 基准
-  const maxTarget = Math.max(...rows.map(r=>r.target.amount));
-
+  // 横轴归一：每站自己的目标 = 100%，虚线统一在右侧
   body.innerHTML = rows.map(r=>{
     const hit = r.pct >= 100;
     const color = hit ? TG_HIT : TG_MISS;
-    // 柱子长度 = mtdG / maxTarget * 100%（可能超过 100%，超出部分保留）
-    const fillW = Math.min(100, r.mtdG / maxTarget * 100);
-    const over = r.mtdG > r.target.amount;
-    // 目标线位置 = target.amount / maxTarget * 100%
-    const lineLeft = r.target.amount / maxTarget * 100;
+    // 柱子长度 = 进度百分比（每站目标=100%），可超过 100%（超出部分保留，向右延伸）
+    const fillW = r.pct;
+    const over = r.pct > 100;
     const pctTxt = r.pct.toFixed(1) + '%';
     return `<div class="tg-row">
       <span class="tg-name">${r.site}<span class="cn">${CN[r.site]||''}</span></span>
       <div class="tg-track">
-        <div class="tg-fill ${over?'over':''}" style="width:${fillW}%;background:${color}">${pctTxt}</div>
-        <div class="tg-target-line" style="left:${lineLeft}%"></div>
+        <div class="tg-fill ${over?'over':''}" style="width:${fillW}%;background:${color}"></div>
+        <div class="tg-target-line" style="left:100%"></div>
       </div>
       <span class="tg-label"><b>${fmtYi(r.mtdG)}</b> / 目标${r.target.label}<span class="pct-badge ${hit?'hit':'miss'}">${pctTxt}</span></span>
     </div>`;
