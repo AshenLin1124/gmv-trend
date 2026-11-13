@@ -101,12 +101,12 @@
   .tg-meta b{color:var(--navy)}
   .tg-empty{font-size:12.5px;color:var(--muted);padding:14px 0;line-height:1.7}
   .tg-row{display:flex;align-items:center;gap:12px;margin:9px 0}
-  .tg-name{min-width:130px;text-align:right;font-size:12px;font-weight:600;color:var(--navy);white-space:nowrap}
+  .tg-name{width:150px;flex:none;text-align:right;font-size:12px;font-weight:600;color:var(--navy);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
   .tg-name .cn{color:var(--muted);font-weight:400;font-size:11px;margin-left:4px}
   .tg-track{flex:1;height:24px;background:#eef2f7;border-radius:5px;position:relative;overflow:visible}
   .tg-fill{height:100%;border-radius:5px 0 0 5px;display:flex;align-items:center;justify-content:flex-end;color:#fff;font-size:11px;font-weight:600;transition:width .3s;min-width:2px}
   .tg-fill.over{border-radius:5px}
-  .tg-label{min-width:150px;text-align:left;font-size:12px;color:var(--muted);white-space:nowrap}
+  .tg-label{width:210px;flex:none;text-align:left;font-size:12px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
   .tg-label b{color:var(--navy);font-size:12.5px}
   .tg-label .pct-badge{font-weight:700;margin-left:6px}
   .tg-label .pct-badge.hit{color:var(--up)}
@@ -276,13 +276,15 @@ let DATA = {"meta":{"generatedAt":"2026-11-13 11:39","dataThrough":"2026-11-12",
 const CN = {MERCARI:'煤炉','YAHOO-AUCTIONS':'雅虎日拍',PAYPAY:'PAYPAY',RAKUMA:'RAKUMA',SURUGA:'骏河屋',SNKRDUNK:'SNKRDUNK'};
 const PALETTE = ['#1f5c8b','#e8590c','#2f9e44','#9c36b5','#e03131','#0c8599','#b8860b','#5f3dc4','#c2255c','#4d7c0f'];
 const TOP6 = ['MERCARI','PAYPAY','YAHOO-AUCTIONS','RAKUMA','SURUGA','SNKRDUNK'];
+// 首次打开默认选中的站点（用户设定目标的5个核心站点）
+const DEFAULT_SITES = ['MERCARI','PAYPAY','YAHOO-AUCTIONS','SNKRDUNK','RAKUTEN'];
 let months, N;
 function derive(){ months = DATA.months; N = months.length; }
 derive();
 const fmtMonth = m => m.slice(0,4)+'年'+(+m.slice(5))+'月';
-let selected = new Set(TOP6.filter(s=>DATA.sites.includes(s)));
+let selected = new Set(DEFAULT_SITES.filter(s=>DATA.sites.includes(s)));
 let colorMap = {};
-TOP6.forEach((s,i)=>{ if(selected.has(s)) colorMap[s]=PALETTE[i%PALETTE.length]; });
+DEFAULT_SITES.forEach((s,i)=>{ if(selected.has(s)) colorMap[s]=PALETTE[i%PALETTE.length]; });
 let range = null;
 
 const discRate = (s,i)=>{ const g=DATA.gmv[s][i]||0, p=DATA.paid[s][i]||0; return g>0 && p>0 ? Math.max(0,(1-p/g)*100) : null; };
@@ -583,6 +585,25 @@ function targetAmount(site){
   return { amount: t.value, label: t.label, type: 'amount' };
 }
 
+function buildTargetSummary(){
+  // 精简显示已设目标站点：显式站点 + 「其他站点」（若有通配）
+  if(!TG) return '';
+  const explicit = TG.explicit || [];
+  const hasRest = !!TG.hasRest;
+  const names = explicit.map(s=>s+(CN[s]?'·'+CN[s]:'')).join('、');
+  if(hasRest){
+    return names ? (names + '、其他站点') : '其他站点';
+  }
+  // 无通配：显示所有站点（但数量多时截断）
+  const all = Object.keys(TG.targets || {});
+  if(names && explicit.length === all.length){
+    return names;
+  }
+  // 兼容旧数据（无 explicit 字段）：全罗列，但最多显示前 8 个 + 省略
+  const shown = all.slice(0, 8).map(s=>s+(CN[s]?'·'+CN[s]:'')).join('、');
+  return shown + (all.length > 8 ? ` 等 ${all.length} 个站点` : '');
+}
+
 function renderTargets(){
   const body = document.getElementById('tg-body');
   const sub = document.getElementById('tg-sub');
@@ -610,13 +631,13 @@ function renderTargets(){
   });
 
   if(rows.length === 0){
-    metaEl.textContent = '已设目标站点：' + Object.keys(TG.targets).map(s=>s+(CN[s]?'·'+CN[s]:'')).join('、');
+    metaEl.textContent = '已设目标站点：' + buildTargetSummary();
     body.innerHTML = '<div class="tg-empty">已设置目标，但「分站走势」当前未选中这些站点。请在「分站走势」中勾选已设目标的站点，即可在此查看进度。</div>';
     return;
   }
 
   const setSites = Object.keys(TG.targets);
-  metaEl.innerHTML = '已设目标站点：<b>' + setSites.map(s=>s+(CN[s]?'·'+CN[s]:'')).join('、') + '</b>（本月目标；可在飞书发送「设目标」修改）';
+  metaEl.innerHTML = '已设目标站点：<b>' + buildTargetSummary() + '</b>（本月目标；可在飞书发送「设目标」修改）';
   if(TG.updatedAt) metaEl.innerHTML += ' · 更新于 ' + TG.updatedAt;
 
   // 按进度降序排列

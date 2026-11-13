@@ -287,5 +287,13 @@
       "value": 101.0,
       "label": "101%"
     }
-  }
+  },
+  "explicit": [
+    "MERCARI",
+    "PAYPAY",
+    "YAHOO-AUCTIONS",
+    "SNKRDUNK",
+    "RAKUTEN"
+  ],
+  "hasRest": true
 }
