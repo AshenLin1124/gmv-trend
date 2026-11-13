@@ -94,6 +94,31 @@
   table.proj td{padding:6px 10px;text-align:right;border-bottom:1px solid #f0f3f8}
   table.proj tr:hover td{background:#f8fbff}
   .meta-note{font-size:11.5px;color:var(--muted);margin-top:10px}
+  /* ===== 目标追踪 ===== */
+  .tg-wrap{margin-top:0}
+  .tg-head{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;margin-bottom:6px}
+  .tg-meta{font-size:12px;color:var(--muted)}
+  .tg-meta b{color:var(--navy)}
+  .tg-empty{font-size:12.5px;color:var(--muted);padding:14px 0;line-height:1.7}
+  .tg-row{display:flex;align-items:center;gap:12px;margin:9px 0}
+  .tg-name{min-width:130px;text-align:right;font-size:12px;font-weight:600;color:var(--navy);white-space:nowrap}
+  .tg-name .cn{color:var(--muted);font-weight:400;font-size:11px;margin-left:4px}
+  .tg-track{flex:1;height:24px;background:#eef2f7;border-radius:5px;position:relative;overflow:visible}
+  .tg-fill{height:100%;border-radius:5px 0 0 5px;display:flex;align-items:center;justify-content:flex-end;padding-right:6px;color:#fff;font-size:11px;font-weight:600;transition:width .3s;min-width:2px}
+  .tg-fill.over{border-radius:5px}
+  .tg-fill .pct-in{opacity:0}
+  .tg-label{min-width:150px;text-align:left;font-size:12px;color:var(--muted);white-space:nowrap}
+  .tg-label b{color:var(--navy);font-size:12.5px}
+  .tg-label .pct-badge{font-weight:700;margin-left:6px}
+  .tg-label .pct-badge.hit{color:var(--up)}
+  .tg-label .pct-badge.miss{color:var(--down)}
+  .tg-target-line{position:absolute;top:-4px;bottom:-4px;left:0;border-left:2px dashed #e03131;z-index:1}
+  .tg-legend{font-size:11.5px;color:var(--muted);margin-top:12px;display:flex;gap:18px;flex-wrap:wrap;align-items:center}
+  .tg-legend i{display:inline-block;width:14px;height:0;border-top:2px dashed #e03131;margin-right:5px;vertical-align:middle}
+  .tg-legend .sw{display:inline-block;width:12px;height:12px;border-radius:3px;margin-right:5px;vertical-align:-2px}
+  .tg-legend .sw.hit{background:#4e9e94}
+  .tg-legend .sw.miss{background:#7c93b5}
+  .tg-legend .tg-hint-btn{margin-left:auto;border:0;background:none;color:var(--blue);font-size:11.5px;cursor:pointer;text-decoration:underline}
   #toast{position:fixed;left:50%;bottom:34px;transform:translateX(-50%);background:rgba(15,39,64,.96);color:#fff;padding:11px 20px;border-radius:8px;font-size:13px;display:none;z-index:200;box-shadow:0 6px 18px rgba(0,0,0,.3);max-width:86vw;text-align:center}
   /* ===== 访问密码门禁 ===== */
   #pw-gate{position:fixed;inset:0;background:linear-gradient(135deg,#0f2740 0%,#1f5c8b 100%);z-index:9999;display:flex;align-items:center;justify-content:center;padding:20px}
@@ -204,6 +229,21 @@
     <svg id="brush" width="100%" height="86"></svg>
   </div>
   <p class="foot">注：① 当月为未完结月（MTD累计），值低于全月属正常。② 优惠率 = 1 − 实付金额 ÷ 订单金额，为含券/积分等让利的综合估算值。③ 两表衔接处已按「旧表&lt;2026、新表≥2026」去重。④ 站点名为Base原始站点编码。</p>
+</section>
+
+<!-- ===== 目标追踪 ===== -->
+<section id="target-section" class="tg-wrap">
+  <h2>目标追踪<span class="sub" id="tg-sub"></span></h2>
+  <div class="tg-head">
+    <div class="tg-meta" id="tg-meta"></div>
+  </div>
+  <div id="tg-body"></div>
+  <div class="tg-legend">
+    <span><i></i>红色虚线 = 目标值 100%（横轴按所选站点最大目标归一）</span>
+    <span><span class="sw hit"></span>已达标（≥100%）</span>
+    <span><span class="sw miss"></span>未达标</span>
+    <button class="tg-hint-btn" id="tg-how">如何设置目标？</button>
+  </div>
 </section>
 
 <!-- ===== 本月推演 ===== -->
@@ -517,6 +557,104 @@ function syncQuickBtns(){
   });
 }
 
+/* ============ 目标追踪 ============ */
+let TG = null;  // {month, updatedAt, targets: {site:{type,value,label}}}
+const TG_HIT = '#4e9e94', TG_MISS = '#7c93b5';
+
+async function loadTargets(){
+  try{
+    const r = await fetch('targets.json?t='+Date.now(), {cache:'no-store'});
+    if(!r.ok){ TG = {targets:{}}; return; }
+    const d = await r.json();
+    TG = d && d.targets ? d : {targets:{}};
+  }catch(e){ TG = {targets:{}}; }
+}
+
+/* 解析某站点的目标金额（日元），返回 {amount, label, type} 或 null */
+function targetAmount(site){
+  if(!TG || !TG.targets) return null;
+  const t = TG.targets[site];
+  if(!t) return null;
+  if(t.type === 'percent'){
+    // 百分比：上月全月 GMV × 百分比
+    const prev = N-2;
+    const prevG = DATA.gmv[site] ? (DATA.gmv[site][prev]||0) : 0;
+    return { amount: prevG * t.value / 100, label: t.label, type: 'percent', base: prevG };
+  }
+  return { amount: t.value, label: t.label, type: 'amount' };
+}
+
+function renderTargets(){
+  const body = document.getElementById('tg-body');
+  const sub = document.getElementById('tg-sub');
+  const metaEl = document.getElementById('tg-meta');
+
+  if(!TG || !TG.targets || Object.keys(TG.targets).length === 0){
+    sub.textContent = '';
+    metaEl.textContent = '';
+    body.innerHTML = '<div class="tg-empty">尚未设置本月目标。可通过飞书机器人发送「设目标 站点名 目标值」来设置（如「设目标 MERCARI 10亿」），设置后所有访问者看到同一份目标。目标支持金额（亿/万/纯数字）和百分比（如 101% = 上月GMV的101%）。</div>';
+    return;
+  }
+
+  const cur = months[N-1];
+  const curMonthLabel = fmtMonth(cur);
+  sub.textContent = `本月（${curMonthLabel}）业绩进度 vs 目标 · 与「分站走势」已选站点联动`;
+
+  // 只展示「分站走势」中已选、且已设目标的站点
+  const rows = [];
+  [...selected].forEach(s=>{
+    const t = targetAmount(s);
+    if(!t) return;
+    const mtdG = DATA.gmv[s] ? (DATA.gmv[s][N-1]||0) : 0;
+    const pct = t.amount > 0 ? mtdG / t.amount * 100 : 0;
+    rows.push({ site:s, mtdG, target:t, pct });
+  });
+
+  if(rows.length === 0){
+    metaEl.textContent = '已设目标站点：' + Object.keys(TG.targets).map(s=>s+(CN[s]?'·'+CN[s]:'')).join('、');
+    body.innerHTML = '<div class="tg-empty">已设置目标，但「分站走势」当前未选中这些站点。请在「分站走势」中勾选已设目标的站点，即可在此查看进度。</div>';
+    return;
+  }
+
+  const setSites = Object.keys(TG.targets);
+  metaEl.innerHTML = '已设目标站点：<b>' + setSites.map(s=>s+(CN[s]?'·'+CN[s]:'')).join('、') + '</b>（本月目标；可在飞书发送「设目标」修改）';
+  if(TG.updatedAt) metaEl.innerHTML += ' · 更新于 ' + TG.updatedAt;
+
+  // 按进度降序排列
+  rows.sort((a,b)=>b.pct-a.pct);
+
+  // 横轴归一：以所有展示站点中的最大目标金额为 100% 基准
+  const maxTarget = Math.max(...rows.map(r=>r.target.amount));
+
+  body.innerHTML = rows.map(r=>{
+    const hit = r.pct >= 100;
+    const color = hit ? TG_HIT : TG_MISS;
+    // 柱子长度 = mtdG / maxTarget * 100%（可能超过 100%，超出部分保留）
+    const fillW = Math.min(100, r.mtdG / maxTarget * 100);
+    const over = r.mtdG > r.target.amount;
+    // 目标线位置 = target.amount / maxTarget * 100%
+    const lineLeft = r.target.amount / maxTarget * 100;
+    const pctTxt = r.pct.toFixed(1) + '%';
+    return `<div class="tg-row">
+      <span class="tg-name">${r.site}<span class="cn">${CN[r.site]||''}</span></span>
+      <div class="tg-track">
+        <div class="tg-fill ${over?'over':''}" style="width:${fillW}%;background:${color}">${pctTxt}</div>
+        <div class="tg-target-line" style="left:${lineLeft}%"></div>
+      </div>
+      <span class="tg-label"><b>${fmtYi(r.mtdG)}</b> / 目标${r.target.label}<span class="pct-badge ${hit?'hit':'miss'}">${pctTxt}</span></span>
+    </div>`;
+  }).join('');
+}
+
+function initTargets(){
+  loadTargets().then(renderTargets);
+}
+
+/* 目标设置引导 */
+document.getElementById('tg-how').onclick = ()=>{
+  toast('通过飞书机器人发送：设目标 MERCARI 10亿 PAYPAY 101%（支持金额亿/万/纯数字，或百分比%）。设置后自动更新看板，所有访问者看到同一份目标。', 7000);
+};
+
 /* ============ 本月推演 ============ */
 function projRows(){
   const elapsed = DATA.meta.elapsedDays;
@@ -601,7 +739,8 @@ document.getElementById('btn-refresh').onclick = async ()=>{
       derive();
       selected = new Set([...selected].filter(s=>DATA.sites.includes(s)));
       Object.keys(colorMap).forEach(s=>{ if(!selected.has(s)) delete colorMap[s]; });
-      if(!range || range[1]>N-1) range = [0, N-1];
+      const _ys = months.indexOf('2026-01');
+      if(!range || range[1]>N-1) range = _ys>=0 ? [_ys, N-1] : [0, N-1];
       initAll();
       toast('✅ 数据已更新到最新（截至 '+d.meta.dataThrough+'，生成于 '+d.meta.generatedAt+'）');
     }else{
@@ -619,17 +758,21 @@ function renderAll(){
   buildBrush();
   updateLabels();
   syncQuickBtns();
+  if(TG) renderTargets();
 }
 function initAll(){
   renderKPIs();
   refreshFilterUI();
   renderAll();
   renderProjection();
+  initTargets();
 }
 let rszT = null;
 window.addEventListener('resize', ()=>{ clearTimeout(rszT); rszT = setTimeout(renderAll, 120); });
 
-range = [0, N-1];
+/* 默认定位到 2026年1月 ~ 当前月（仍可拖拽回看更早数据） */
+const yStart = months.indexOf('2026-01');
+range = yStart >= 0 ? [yStart, N-1] : [0, N-1];
 initAll();
 
 /* ============ 打开页面自动拉取最新数据（防CDN缓存旧HTML内嵌数据） ============ */
@@ -643,7 +786,8 @@ initAll();
       derive();
       selected = new Set([...selected].filter(s=>DATA.sites.includes(s)));
       Object.keys(colorMap).forEach(s=>{ if(!selected.has(s)) delete colorMap[s]; });
-      if(!range || range[1]>N-1) range = [0, N-1];
+      const _ys = months.indexOf('2026-01');
+      if(!range || range[1]>N-1) range = _ys>=0 ? [_ys, N-1] : [0, N-1];
       initAll();
       toast('✅ 已自动同步最新数据（截至 '+d.meta.dataThrough+'）');
     }

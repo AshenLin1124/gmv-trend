@@ -1,0 +1,21 @@
+{
+  "month": "2026-11",
+  "updatedAt": "2026-11-13 12:43",
+  "targets": {
+    "MERCARI": {
+      "type": "amount",
+      "value": 1000000000.0,
+      "label": "10亿"
+    },
+    "PAYPAY": {
+      "type": "percent",
+      "value": 101.0,
+      "label": "101%"
+    },
+    "SURUGA": {
+      "type": "amount",
+      "value": 50000000.0,
+      "label": "5000万"
+    }
+  }
+}
