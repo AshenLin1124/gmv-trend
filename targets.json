@@ -1,6 +1,6 @@
 {
   "month": "2026-11",
-  "updatedAt": "2026-11-13 13:42",
+  "updatedAt": "2026-11-13 17:02",
   "targets": {
     "MERCARI": {
       "type": "amount",
@@ -198,9 +198,9 @@
       "label": "101%"
     },
     "RAKUMA": {
-      "type": "percent",
-      "value": 101.0,
-      "label": "101%"
+      "type": "amount",
+      "value": 30470000.0,
+      "label": "3047万"
     },
     "REHELLO": {
       "type": "percent",
@@ -293,7 +293,8 @@
     "PAYPAY",
     "YAHOO-AUCTIONS",
     "SNKRDUNK",
-    "RAKUTEN"
+    "RAKUTEN",
+    "RAKUMA"
   ],
-  "hasRest": true
+  "hasRest": false
 }
